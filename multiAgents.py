@@ -117,7 +117,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         ret = []  # RM: stores the return value for this node actions
         todo = gameState.getLegalActions(agentIndex)  # Store the actions
-        if Directions.STOP in todo:
+        if Directions.STOP in todo
             todo.remove(Directions.STOP)
 
         for action in todo:
