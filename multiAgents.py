@@ -113,25 +113,32 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState):
 
+        #helper function to decide what agent index and depth we are on
         def chooser(state, depth, agent):
+            #terminal action
             if state.isLose() or state.isWin() or self.depth == depth: 
                 return scoreEvaluationFunction(state)
 
+            #last ghost
             if agent == state.getNumAgents():
                 return chooser(state, depth+1, 0)
 
+            #pacmans turn
             elif agent==0:
                 return pacman(state, depth, agent)
 
+            #ghost turn
             else:
                 return ghost(state, depth, agent)
-        
+
+        #pacman - max_player
         def pacman(state, depth, agent):
             score = float("-inf")
             for action in state.getLegalActions(agent):
                 score = max(score, chooser(state.generateSuccessor(agent, action), depth, agent+1))
             return score
         
+        #ghost - min_player
         def ghost(state, depth, agent):
             score = float("inf")
             for action in state.getLegalActions(agent):
@@ -141,6 +148,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         optimal_action = None
         max_score = -float("inf")
 
+        #start building the tree, and choose action for pacman
         for action in gameState.getLegalActions(0):
             score = chooser(gameState.generateSuccessor(0, action), 0, 1)
             if score > max_score:
@@ -160,28 +168,35 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState):
 
+        #helper function to decide what agent index and depth we are on
         def chooser(state, depth, agent, alpha, beta):
+            #terminal action
             if state.isLose() or state.isWin() or self.depth == depth: 
                 return scoreEvaluationFunction(state)
 
+            #last ghost
             if agent == state.getNumAgents():
                 return chooser(state, depth+1, 0, alpha, beta)
 
+            #pacmans turn
             elif agent==0:
                 return pacman(state, depth, agent, alpha, beta)
 
+            #ghost turn
             else:
                 return ghost(state, depth, agent, alpha, beta)
         
+        #pacman - max_player
         def pacman(state, depth, agent, alpha, beta):
             score = float("-inf")
             for action in state.getLegalActions(agent):
                 score = max(score, chooser(state.generateSuccessor(agent, action), depth, agent+1, alpha, beta))
-                if score > beta:
+                if score > beta:   #Now skipping nodes if they are redundant
                     return score
                 alpha = max(alpha, score)
             return score
         
+        #ghost - min_player
         def ghost(state, depth, agent, alpha, beta):
             score = float("inf")
             for action in state.getLegalActions(agent):
@@ -196,6 +211,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         optimal_action = None
         max_score = -float("inf")
 
+        #Initating tree and choosing best action for pacman
         for action in gameState.getLegalActions(0):
             score = chooser(gameState.generateSuccessor(0, action), 0, 1, alpha, beta)
             if score > max_score:
